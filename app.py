@@ -31,7 +31,7 @@ def inject_globals():
         'no': {
             'title': 'Beste Negler',
             'home': 'Start',
-            'shop': 'Sklep',
+            'shop': 'Butikk',
             'login': 'Logg inn',
             'logout': 'Logg ut',
             'register': 'Registrer deg',
@@ -395,7 +395,9 @@ def admin_import():
 
 
 if __name__ == '__main__':
-    app.run()
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
 
 
 def init_db_and_admin():
@@ -412,5 +414,7 @@ def init_db_and_admin():
         else:
             print("AUTO (Render): Admin already exists.")
 
-
 init_db_and_admin()
+
+if __name__ == '__main__':
+    app.run()

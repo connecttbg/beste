@@ -1,11 +1,15 @@
 
 {% extends "base.html" %}
-{% block title %}Admin - Produkty{% endblock %}
+{% block title %}Admin - Produkter{% endblock %}
 {% block content %}
-<h1 class="h4 mb-3">Admin – Produkty</h1>
+<h1 class="h4 mb-3">{{ 'Admin – Produkter' if current_lang=='no' else 'Admin – Products' }}</h1>
 <div class="mb-3 d-flex justify-content-between">
-  <a href="{{ url_for('admin_new_product') }}" class="btn btn-dark btn-sm">Nowy produkt</a>
-  <a href="{{ url_for('admin_import') }}" class="btn btn-outline-dark btn-sm">Import z CSV</a>
+  <a href="{{ url_for('admin_new_product') }}" class="btn btn-dark btn-sm">
+    {{ 'Nytt produkt' if current_lang=='no' else 'New product' }}
+  </a>
+  <a href="{{ url_for('admin_import') }}" class="btn btn-outline-dark btn-sm">
+    {{ 'Import fra CSV' if current_lang=='no' else 'Import from CSV' }}
+  </a>
 </div>
 <div class="table-responsive">
   <table class="table table-sm align-middle">
@@ -13,9 +17,9 @@
       <tr>
         <th>ID</th>
         <th>SKU</th>
-        <th>Nazwa</th>
-        <th>Cena</th>
-        <th>Ilość</th>
+        <th>{{ 'Navn' if current_lang=='no' else 'Name' }}</th>
+        <th>{{ 'Pris' if current_lang=='no' else 'Price' }}</th>
+        <th>{{ 'Antall' if current_lang=='no' else 'Qty' }}</th>
         <th></th>
       </tr>
     </thead>
@@ -28,9 +32,13 @@
           <td>{{ '%.2f'|format(p.price) }} NOK</td>
           <td>{{ p.qty }}</td>
           <td>
-            <a href="{{ url_for('admin_edit_product', product_id=p.id) }}" class="btn btn-sm btn-outline-secondary">Edytuj</a>
-            <form method="post" action="{{ url_for('admin_delete_product', product_id=p.id) }}" style="display:inline-block" onsubmit="return confirm('Usuń produkt?');">
-              <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
+            <a href="{{ url_for('admin_edit_product', product_id=p.id) }}" class="btn btn-sm btn-outline-secondary">
+              {{ 'Rediger' if current_lang=='no' else 'Edit' }}
+            </a>
+            <form method="post" action="{{ url_for('admin_delete_product', product_id=p.id) }}" style="display:inline-block" onsubmit="return confirm('{{ 'Slette produkt?' if current_lang=='no' else 'Delete product?' }}');">
+              <button type="submit" class="btn btn-sm btn-outline-danger">
+                {{ 'Slett' if current_lang=='no' else 'Delete' }}
+              </button>
             </form>
           </td>
         </tr>

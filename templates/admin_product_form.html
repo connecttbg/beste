@@ -2,7 +2,11 @@
 {% extends "base.html" %}
 {% block title %}Admin - Produkt{% endblock %}
 {% block content %}
-<h1 class="h4 mb-3">{{ 'Nowy produkt' if not product else 'Edycja produktu' }}</h1>
+<h1 class="h4 mb-3">
+  {{ 'Nytt produkt' if not product and current_lang=='no'
+     else 'New product' if not product and current_lang!='no'
+     else ('Rediger produkt' if current_lang=='no' else 'Edit product') }}
+</h1>
 <form method="post">
   <div class="row">
     <div class="col-md-6">
@@ -15,49 +19,55 @@
         <input type="text" name="ean" class="form-control" value="{{ product.ean if product else '' }}">
       </div>
       <div class="mb-3">
-        <label class="form-label">Nazwa</label>
+        <label class="form-label">{{ 'Navn' if current_lang=='no' else 'Name' }}</label>
         <input type="text" name="name" class="form-control" value="{{ product.name if product else '' }}" required>
       </div>
       <div class="mb-3">
-        <label class="form-label">Kategoria</label>
+        <label class="form-label">{{ 'Kategori' if current_lang=='no' else 'Category' }}</label>
         <input type="text" name="category" class="form-control" value="{{ product.category if product else '' }}">
       </div>
       <div class="mb-3">
-        <label class="form-label">Marka</label>
+        <label class="form-label">{{ 'Merke' if current_lang=='no' else 'Brand' }}</label>
         <input type="text" name="brand" class="form-control" value="{{ product.brand if product else '' }}">
       </div>
     </div>
     <div class="col-md-6">
       <div class="mb-3">
-        <label class="form-label">Waga (g)</label>
+        <label class="form-label">{{ 'Vekt (g)' if current_lang=='no' else 'Weight (g)' }}</label>
         <input type="number" step="0.01" name="weight" class="form-control" value="{{ product.weight if product else '' }}">
       </div>
       <div class="mb-3">
-        <label class="form-label">Ilość</label>
+        <label class="form-label">{{ 'Antall' if current_lang=='no' else 'Quantity' }}</label>
         <input type="number" name="qty" class="form-control" value="{{ product.qty if product else '' }}">
       </div>
       <div class="mb-3">
-        <label class="form-label">Cena (NOK)</label>
+        <label class="form-label">{{ 'Pris (NOK)' if current_lang=='no' else 'Price (NOK)' }}</label>
         <input type="number" step="0.01" name="price" class="form-control" value="{{ product.price if product else '' }}" required>
       </div>
       <div class="mb-3">
-        <label class="form-label">Podatek (%)</label>
+        <label class="form-label">{{ 'Mva (%)' if current_lang=='no' else 'Tax (%)' }}</label>
         <input type="number" step="0.01" name="tax" class="form-control" value="{{ product.tax if product else '' }}">
       </div>
       <div class="mb-3">
-        <label class="form-label">URL obrazka</label>
+        <label class="form-label">URL bilde</label>
         <input type="text" name="image_url" class="form-control" value="{{ product.image_url if product else '' }}">
       </div>
     </div>
   </div>
   <div class="mb-3">
-    <label class="form-label">Opis (norweski)</label>
+    <label class="form-label">{{ 'Beskrivelse (norsk)' if current_lang=='no' else 'Description (Norwegian)' }}</label>
     <textarea name="description_no" rows="4" class="form-control">{{ product.description_no if product else '' }}</textarea>
   </div>
   <div class="mb-3">
-    <label class="form-label">Opis (angielski, opcjonalnie – w przeciwnym razie zostanie przetłumaczony automatycznie)</label>
+    <label class="form-label">
+      {{ 'Beskrivelse (engelsk, valgfritt – ellers kan den oversettes automatisk)' 
+         if current_lang=='no'
+         else 'Description (English, optional – otherwise it can be translated automatically)' }}
+    </label>
     <textarea name="description_en" rows="4" class="form-control">{{ product.description_en if product else '' }}</textarea>
   </div>
-  <button type="submit" class="btn btn-dark rounded-pill px-4">Zapisz</button>
+  <button type="submit" class="btn btn-dark rounded-pill px-4">
+    {{ 'Lagre' if current_lang=='no' else 'Save' }}
+  </button>
 </form>
 {% endblock %}
