@@ -31,7 +31,7 @@ def inject_globals():
         'no': {
             'title': 'Beste Negler',
             'home': 'Start',
-            'shop': 'Butikk',
+            'shop': 'Sklep',
             'login': 'Logg inn',
             'logout': 'Logg ut',
             'register': 'Registrer deg',
@@ -53,18 +53,6 @@ def inject_globals():
         'current_lang': lang,
         'labels': labels[lang]
     }
-
-
-
-def clean_html(raw):
-    """Remove basic HTML tags & entities from imported descriptions."""
-    if not raw:
-        return ''
-    import re, html as _html
-    text = _html.unescape(raw)
-    text = re.sub('<[^<]+?>', ' ', text)
-    text = ' '.join(text.split())
-    return text
 
 
 def translate_text(text, target_lang='en'):
@@ -136,20 +124,20 @@ def set_lang(lang):
 
 @app.route('/')
 def index():
-    produkter = Product.query.limit(8).all()
-    return render_template('index.html', produkter=produkter)
+    products = Product.query.limit(8).all()
+    return render_template('index.html', products=products)
 
 
-@app.route('/produkter')
+@app.route('/products')
 def product_list():
     category = request.args.get('category')
     query = Product.query
     if category:
         query = query.filter_by(category=category)
-    produkter = query.all()
+    products = query.all()
     categories = db.session.query(Product.category).distinct().all()
     categories = [c[0] for c in categories if c[0]]
-    return render_template('product_list.html', produkter=produkter, categories=categories)
+    return render_template('product_list.html', products=products, categories=categories)
 
 
 @app.route('/product/<int:product_id>')
@@ -162,10 +150,10 @@ def product_detail(product_id):
 def cart():
     cart = session.get('cart', {})
     product_ids = [int(pid) for pid in cart.keys()]
-    produkter = Product.query.filter(Product.id.in_(product_ids)).all() if product_ids else []
+    products = Product.query.filter(Product.id.in_(product_ids)).all() if product_ids else []
     items = []
     total = 0.0
-    for p in produkter:
+    for p in products:
         qty = cart[str(p.id)]
         subtotal = p.price * qty
         total += subtotal
@@ -180,7 +168,7 @@ def add_to_cart(product_id):
     cart = session.get('cart', {})
     cart[str(product.id)] = cart.get(str(product.id), 0) + qty
     session['cart'] = cart
-    flash('Produkt lagt i handlekurven', 'success')
+    flash('Product added to cart', 'success')
     return redirect(url_for('cart'))
 
 
@@ -189,7 +177,7 @@ def remove_from_cart(product_id):
     cart = session.get('cart', {})
     cart.pop(str(product_id), None)
     session['cart'] = cart
-    flash('Produkt fjernet fra handlekurven', 'info')
+    flash('Product removed from cart', 'info')
     return redirect(url_for('cart'))
 
 
@@ -197,7 +185,7 @@ def remove_from_cart(product_id):
 def checkout():
     cart = session.get('cart', {})
     if not cart:
-        flash('Handlekurven er tom', 'warning')
+        flash('Cart is empty', 'warning')
         return redirect(url_for('product_list'))
 
     if request.method == 'POST':
@@ -205,9 +193,9 @@ def checkout():
         shipping_method = request.form.get('shipping_method')
 
         product_ids = [int(pid) for pid in cart.keys()]
-        produkter = Product.query.filter(Product.id.in_(product_ids)).all()
+        products = Product.query.filter(Product.id.in_(product_ids)).all()
         total = 0.0
-        for p in produkter:
+        for p in products:
             qty = cart[str(p.id)]
             total += p.price * qty
 
@@ -221,7 +209,7 @@ def checkout():
         db.session.add(order)
         db.session.flush()
 
-        for p in produkter:
+        for p in products:
             qty = cart[str(p.id)]
             item = OrderItem(
                 order_id=order.id,
@@ -248,10 +236,10 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password):
             login_user(user)
-            flash('Logget inn', 'success')
+            flash('Logged in successfully', 'success')
             return redirect(url_for('index'))
         else:
-            flash('Feil e-post eller passord', 'danger')
+            flash('Invalid credentials', 'danger')
     return render_template('login.html')
 
 
@@ -261,13 +249,13 @@ def register():
         email = request.form['email']
         password = request.form['password']
         if User.query.filter_by(email=email).first():
-            flash('E-postadressen er allerede registrert', 'warning')
+            flash('Email already registered', 'warning')
             return redirect(url_for('register'))
         user = User(email=email)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
-        flash('Konto opprettet, du kan logge inn nå.', 'success')
+        flash('Account created, you can log in now.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html')
 
@@ -276,7 +264,7 @@ def register():
 @login_required
 def logout():
     logout_user()
-    flash('Logget ut', 'info')
+    flash('Logged out', 'info')
     return redirect(url_for('index'))
 
 
@@ -285,20 +273,20 @@ def admin_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if not current_user.is_authenticated or not current_user.is_admin:
-            flash('Administratorrettigheter kreves', 'danger')
+            flash('Admin access required', 'danger')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated
 
 
-@app.route('/admin/produkter')
+@app.route('/admin/products')
 @admin_required
-def admin_produkter():
-    produkter = Product.query.all()
-    return render_template('admin_produkter.html', produkter=produkter)
+def admin_products():
+    products = Product.query.all()
+    return render_template('admin_products.html', products=products)
 
 
-@app.route('/admin/produkter/new', methods=['GET', 'POST'])
+@app.route('/admin/products/new', methods=['GET', 'POST'])
 @admin_required
 def admin_new_product():
     if request.method == 'POST':
@@ -323,11 +311,11 @@ def admin_new_product():
         db.session.add(product)
         db.session.commit()
         flash('Product created', 'success')
-        return redirect(url_for('admin_produkter'))
+        return redirect(url_for('admin_products'))
     return render_template('admin_product_form.html', product=None)
 
 
-@app.route('/admin/produkter/<int:product_id>/edit', methods=['GET', 'POST'])
+@app.route('/admin/products/<int:product_id>/edit', methods=['GET', 'POST'])
 @admin_required
 def admin_edit_product(product_id):
     product = Product.query.get_or_404(product_id)
@@ -346,18 +334,18 @@ def admin_edit_product(product_id):
         product.image_url = request.form.get('image_url')
         db.session.commit()
         flash('Product updated', 'success')
-        return redirect(url_for('admin_produkter'))
+        return redirect(url_for('admin_products'))
     return render_template('admin_product_form.html', product=product)
 
 
-@app.route('/admin/produkter/<int:product_id>/delete', methods=['POST'])
+@app.route('/admin/products/<int:product_id>/delete', methods=['POST'])
 @admin_required
 def admin_delete_product(product_id):
     product = Product.query.get_or_404(product_id)
     db.session.delete(product)
     db.session.commit()
     flash('Product deleted', 'info')
-    return redirect(url_for('admin_produkter'))
+    return redirect(url_for('admin_products'))
 
 
 @app.route('/admin/import', methods=['GET', 'POST'])
@@ -366,7 +354,7 @@ def admin_import():
     if request.method == 'POST':
         file = request.files.get('file')
         if not file:
-            flash('Ingen fil lastet opp', 'warning')
+            flash('No file uploaded', 'warning')
             return redirect(url_for('admin_import'))
         content = file.read().decode('utf-8-sig')
         f = io.StringIO(content)
@@ -377,30 +365,8 @@ def admin_import():
             if not sku:
                 continue
             existing = Product.query.filter_by(sku=sku).first()
-            description_no = clean_html(row.get('description'))
+            description_no = row.get('description')
             description_en = translate_text(description_no or '', 'en')
-            def to_float(val, default=0.0):
-                if val is None:
-                    return default
-                s = str(val).strip().replace('%', '').replace(' ', '').replace(',', '.')
-                if s == '':
-                    return default
-                try:
-                    return float(s)
-                except ValueError:
-                    return default
-
-            def to_int(val, default=0):
-                if val is None:
-                    return default
-                s = str(val).strip()
-                if s == '':
-                    return default
-                try:
-                    return int(float(s.replace(',', '.')))
-                except ValueError:
-                    return default
-
             data = {
                 'sku': sku,
                 'ean': row.get('EAN'),
@@ -408,10 +374,10 @@ def admin_import():
                 'description_no': description_no,
                 'description_en': description_en,
                 'category': row.get('category'),
-                'weight': to_float(row.get('weight')),
-                'qty': to_int(row.get('qty')),
-                'price': to_float(row.get('price')),
-                'tax': to_float(row.get('tax')),
+                'weight': float(row.get('weight') or 0),
+                'qty': int(float(row.get('qty') or 0)),
+                'price': float(row.get('price') or 0),
+                'tax': float(row.get('tax') or 0),
                 'brand': row.get('brand'),
                 'image_url': (row.get('images') or '').split(',')[0].strip() if row.get('images') else None
             }
@@ -423,17 +389,13 @@ def admin_import():
                 db.session.add(product)
             count += 1
         db.session.commit()
-        flash(f'Importert/oppdatert {count} produkter', 'success')
-        return redirect(url_for('admin_produkter'))
+        flash(f'Imported/updated {count} products', 'success')
+        return redirect(url_for('admin_products'))
     return render_template('admin_import.html')
 
 
 if __name__ == '__main__':
     app.run()
-
-
-
-
 
 
 def init_db_and_admin():
