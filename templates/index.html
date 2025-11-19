@@ -13,12 +13,12 @@
          else 'Beste Negler offers carefully curated products for professional salons and home use.' }}
     </p>
     <a href="{{ url_for('product_list') }}" class="btn btn-dark btn-lg rounded-pill px-4">
-      {{ 'Przejdź do sklepu' if current_lang=='no' else 'Go to shop' }}
+      {{ 'Gå til butikk' if current_lang=='no' else 'Go to shop' }}
     </a>
   </div>
   <div class="col-md-6 text-center">
     <div class="hero-card shadow-lg rounded-4 p-4">
-      <h2 class="h5 mb-3">{{ 'Nowości' if current_lang=='no' else 'New arrivals' }}</h2>
+      <h2 class="h5 mb-3">{{ 'Nyheter' if current_lang=='no' else 'New arrivals' }}</h2>
       <div class="row g-3">
         {% for product in products %}
           <div class="col-6">
@@ -35,7 +35,7 @@
           </div>
         {% else %}
           <p class="text-muted">
-            {{ 'Brak produktów. Dodaj je w panelu admina.' if current_lang=='no' else 'No products yet. Add them in the admin panel.' }}
+            {{ 'Ingen produkter ennå. Legg dem til i adminpanelet.' if current_lang=='no' else 'No products yet. Add them in the admin panel.' }}
           </p>
         {% endfor %}
       </div>

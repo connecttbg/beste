@@ -31,12 +31,12 @@
     <form method="post" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="d-flex align-items-center mb-3">
       <input type="number" min="1" name="qty" value="1" class="form-control w-auto me-2" style="max-width: 100px;">
       <button type="submit" class="btn btn-dark rounded-pill px-4">
-        {{ 'Dodaj do koszyka' if current_lang=='no' else 'Add to cart' }}
+        {{ 'Legg i handlekurven' if current_lang=='no' else 'Add to cart' }}
       </button>
     </form>
     {% if product.qty is not none %}
       <div class="small text-muted">
-        {{ 'Dostępnych sztuk:' if current_lang=='no' else 'In stock:' }} {{ product.qty }}
+        {{ 'På lager:' if current_lang=='no' else 'In stock:' }} {{ product.qty }}
       </div>
     {% endif %}
   </div>

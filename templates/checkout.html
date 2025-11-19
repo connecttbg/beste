@@ -3,16 +3,16 @@
 {% block title %}Checkout{% endblock %}
 {% block content %}
 <h1 class="h4 mb-4">
-  {{ 'Podsumowanie zamówienia' if current_lang=='no' else 'Order summary' }}
+  {{ 'Ordreoversikt' if current_lang=='no' else 'Order summary' }}
 </h1>
 <form method="post">
   <div class="row">
     <div class="col-md-6 mb-3">
       <label class="form-label">
-        {{ 'Metoda płatności' if current_lang=='no' else 'Payment method' }}
+        {{ 'Betalingsmetode' if current_lang=='no' else 'Payment method' }}
       </label>
       <select name="payment_method" class="form-select" required>
-        <option value="card">{{ 'Karta płatnicza' if current_lang=='no' else 'Card' }}</option>
+        <option value="card">{{ 'Bankkort' if current_lang=='no' else 'Card' }}</option>
         <option value="klarna">Klarna</option>
         <option value="vipps">Vipps</option>
       </select>
@@ -24,7 +24,7 @@
     </div>
     <div class="col-md-6 mb-3">
       <label class="form-label">
-        {{ 'Metoda dostawy' if current_lang=='no' else 'Shipping method' }}
+        {{ 'Fraktmetode' if current_lang=='no' else 'Shipping method' }}
       </label>
       <select name="shipping_method" class="form-select" required>
         <option value="posten">Posten</option>
@@ -32,14 +32,14 @@
         <option value="helthjem">Helthjem</option>
       </select>
       <div class="form-text">
-        {{ 'Tu możesz później powiązać API Posten, Bring i Helthjem.'
+        {{ 'Her kan du senere koble til API-er for Posten, Bring og Helthjem.'
            if current_lang=='no'
            else 'Here you can later connect Posten, Bring and Helthjem APIs.' }}
       </div>
     </div>
   </div>
   <button type="submit" class="btn btn-dark btn-lg rounded-pill px-4">
-    {{ 'Złóż zamówienie' if current_lang=='no' else 'Place order' }}
+    {{ 'Fullfør bestilling' if current_lang=='no' else 'Place order' }}
   </button>
 </form>
 {% endblock %}
