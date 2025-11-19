@@ -436,7 +436,6 @@ if __name__ == '__main__':
 
 
 
-@app.before_first_request
 def init_db_and_admin():
     with app.app_context():
         db.create_all()
@@ -450,3 +449,6 @@ def init_db_and_admin():
             print("AUTO (Render): Admin account created.")
         else:
             print("AUTO (Render): Admin already exists.")
+
+
+init_db_and_admin()
