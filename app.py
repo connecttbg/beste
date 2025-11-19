@@ -64,6 +64,42 @@ def translate_text(text, target_lang='en'):
     return text
 
 
+def clean_html(raw):
+    """Remove basic HTML tags & entities from imported descriptions."""
+    if not raw:
+        return ''
+    import re, html as _html
+    text = _html.unescape(str(raw))
+    text = re.sub('<[^<]+?>', ' ', text)
+    text = ' '.join(text.split())
+    return text
+
+
+def to_float(val, default=0.0):
+    if val is None:
+        return default
+    s = str(val).strip().replace('%', '').replace(' ', '').replace(',', '.')
+    if s == '':
+        return default
+    try:
+        return float(s)
+    except ValueError:
+        return default
+
+
+def to_int(val, default=0):
+    if val is None:
+        return default
+    s = str(val).strip()
+    if s == '':
+        return default
+    try:
+        return int(float(s.replace(',', '.')))
+    except ValueError:
+        return default
+
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -360,36 +396,47 @@ def admin_import():
         f = io.StringIO(content)
         reader = csv.DictReader(f, delimiter=';')
         count = 0
+        skipped = 0
         for row in reader:
-            sku = row.get('sku')
-            if not sku:
+            try:
+                sku = row.get('sku')
+                if not sku:
+                    skipped += 1
+                    continue
+                existing = Product.query.filter_by(sku=sku).first()
+                description_no = clean_html(row.get('description'))
+                description_en = translate_text(description_no or '', 'en')
+                data = {
+                    'sku': sku,
+                    'ean': row.get('EAN'),
+                    'name': row.get('name'),
+                    'description_no': description_no,
+                    'description_en': description_en,
+                    'category': row.get('category'),
+                    'weight': to_float(row.get('weight')),
+                    'qty': to_int(row.get('qty')),
+                    'price': to_float(row.get('price')),
+                    'tax': to_float(row.get('tax')),
+                    'brand': row.get('brand'),
+                    'image_url': (row.get('images') or '').split(',')[0].strip() if row.get('images') else None
+                }
+                if existing:
+                    for key, value in data.items():
+                        setattr(existing, key, value)
+                else:
+                    product = Product(**data)
+                    db.session.add(product)
+                count += 1
+            except Exception as e:
+                # skip problematic row but don't break whole import
+                skipped += 1
+                print(f"CSV import: skipped row due to error: {e} | row={row}")
                 continue
-            existing = Product.query.filter_by(sku=sku).first()
-            description_no = row.get('description')
-            description_en = translate_text(description_no or '', 'en')
-            data = {
-                'sku': sku,
-                'ean': row.get('EAN'),
-                'name': row.get('name'),
-                'description_no': description_no,
-                'description_en': description_en,
-                'category': row.get('category'),
-                'weight': float(row.get('weight') or 0),
-                'qty': int(float(row.get('qty') or 0)),
-                'price': float(row.get('price') or 0),
-                'tax': float(row.get('tax') or 0),
-                'brand': row.get('brand'),
-                'image_url': (row.get('images') or '').split(',')[0].strip() if row.get('images') else None
-            }
-            if existing:
-                for key, value in data.items():
-                    setattr(existing, key, value)
-            else:
-                product = Product(**data)
-                db.session.add(product)
-            count += 1
         db.session.commit()
-        flash(f'Imported/updated {count} products', 'success')
+        msg = f'Importert/oppdatert {count} produkter'
+        if skipped:
+            msg += f' (hoppet over {skipped} rader med feil)'
+        flash(msg, 'success')
         return redirect(url_for('admin_products'))
     return render_template('admin_import.html')
 
