@@ -3,9 +3,9 @@
 {% block title %}{{ product.name }}{% endblock %}
 {% block content %}
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-6 mb-3">
     {% if product.image_url %}
-      <img src="{{ product.image_url }}" class="img-fluid rounded-4 shadow-sm mb-3" alt="{{ product.name }}">
+      <img src="{{ product.image_url }}" class="img-fluid rounded-4 shadow-sm" alt="{{ product.name }}">
     {% endif %}
   </div>
   <div class="col-md-6">
@@ -23,7 +23,7 @@
     </div>
     <p class="mb-4">
       {% if current_lang == 'no' %}
-        {{ product.description_no }}
+        {{ product.description_no or product.description_en }}
       {% else %}
         {{ product.description_en or product.description_no }}
       {% endif %}
@@ -34,7 +34,7 @@
         {{ 'Legg i handlekurven' if current_lang=='no' else 'Add to cart' }}
       </button>
     </form>
-    {% if product.qty is not None %}
+    {% if product.qty is not none %}
       <div class="small text-muted">
         {{ 'På lager:' if current_lang=='no' else 'In stock:' }} {{ product.qty }}
       </div>

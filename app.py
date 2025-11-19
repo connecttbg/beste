@@ -404,8 +404,11 @@ def admin_import():
                     skipped += 1
                     continue
                 existing = Product.query.filter_by(sku=sku).first()
-                description_no = clean_html(row.get('description'))
-                description_en = translate_text(description_no or '', 'en')
+                source_desc = clean_html(row.get('description'))
+                # Here you can integrate a real translation API.
+                # Currently translate_text just returns the source text.
+                description_no = translate_text(source_desc or '', 'no')
+                description_en = translate_text(source_desc or '', 'en')
                 data = {
                     'sku': sku,
                     'ean': row.get('EAN'),
