@@ -1,0 +1,63 @@
+
+{% extends "base.html" %}
+{% block title %}Admin - Produkt{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">{{ 'Nowy produkt' if not product else 'Edycja produktu' }}</h1>
+<form method="post">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label class="form-label">SKU</label>
+        <input type="text" name="sku" class="form-control" value="{{ product.sku if product else '' }}" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">EAN</label>
+        <input type="text" name="ean" class="form-control" value="{{ product.ean if product else '' }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Nazwa</label>
+        <input type="text" name="name" class="form-control" value="{{ product.name if product else '' }}" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Kategoria</label>
+        <input type="text" name="category" class="form-control" value="{{ product.category if product else '' }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Marka</label>
+        <input type="text" name="brand" class="form-control" value="{{ product.brand if product else '' }}">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label class="form-label">Waga (g)</label>
+        <input type="number" step="0.01" name="weight" class="form-control" value="{{ product.weight if product else '' }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Ilość</label>
+        <input type="number" name="qty" class="form-control" value="{{ product.qty if product else '' }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Cena (NOK)</label>
+        <input type="number" step="0.01" name="price" class="form-control" value="{{ product.price if product else '' }}" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Podatek (%)</label>
+        <input type="number" step="0.01" name="tax" class="form-control" value="{{ product.tax if product else '' }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">URL obrazka</label>
+        <input type="text" name="image_url" class="form-control" value="{{ product.image_url if product else '' }}">
+      </div>
+    </div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Opis (norweski)</label>
+    <textarea name="description_no" rows="4" class="form-control">{{ product.description_no if product else '' }}</textarea>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Opis (angielski, opcjonalnie – w przeciwnym razie zostanie przetłumaczony automatycznie)</label>
+    <textarea name="description_en" rows="4" class="form-control">{{ product.description_en if product else '' }}</textarea>
+  </div>
+  <button type="submit" class="btn btn-dark rounded-pill px-4">Zapisz</button>
+</form>
+{% endblock %}

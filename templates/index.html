@@ -1,0 +1,45 @@
+
+{% extends "base.html" %}
+{% block title %}{{ 'Velkommen' if current_lang=='no' else 'Welcome' }}{% endblock %}
+{% block content %}
+<div class="row align-items-center mb-5">
+  <div class="col-md-6">
+    <h1 class="display-5 fw-bold mb-3">
+      {{ 'Profesjonell neglepleie, levert hjem.' if current_lang=='no' else 'Professional nail care, delivered to your door.' }}
+    </h1>
+    <p class="lead text-muted mb-4">
+      {{ 'Beste Negler tilbyr nøye utvalgte produkter for profesjonelle salonger og hjemmebruk.'
+         if current_lang=='no'
+         else 'Beste Negler offers carefully curated products for professional salons and home use.' }}
+    </p>
+    <a href="{{ url_for('product_list') }}" class="btn btn-dark btn-lg rounded-pill px-4">
+      {{ 'Przejdź do sklepu' if current_lang=='no' else 'Go to shop' }}
+    </a>
+  </div>
+  <div class="col-md-6 text-center">
+    <div class="hero-card shadow-lg rounded-4 p-4">
+      <h2 class="h5 mb-3">{{ 'Nowości' if current_lang=='no' else 'New arrivals' }}</h2>
+      <div class="row g-3">
+        {% for product in products %}
+          <div class="col-6">
+            <div class="card border-0 product-card h-100">
+              {% if product.image_url %}
+                <img src="{{ product.image_url }}" class="card-img-top product-image" alt="{{ product.name }}">
+              {% endif %}
+              <div class="card-body p-2">
+                <div class="small text-muted mb-1">{{ product.brand }}</div>
+                <h3 class="product-title small mb-1">{{ product.name }}</h3>
+                <div class="fw-semibold">{{ '%.2f'|format(product.price) }} NOK</div>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <p class="text-muted">
+            {{ 'Brak produktów. Dodaj je w panelu admina.' if current_lang=='no' else 'No products yet. Add them in the admin panel.' }}
+          </p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

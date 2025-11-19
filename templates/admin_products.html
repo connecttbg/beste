@@ -1,0 +1,41 @@
+
+{% extends "base.html" %}
+{% block title %}Admin - Produkty{% endblock %}
+{% block content %}
+<h1 class="h4 mb-3">Admin – Produkty</h1>
+<div class="mb-3 d-flex justify-content-between">
+  <a href="{{ url_for('admin_new_product') }}" class="btn btn-dark btn-sm">Nowy produkt</a>
+  <a href="{{ url_for('admin_import') }}" class="btn btn-outline-dark btn-sm">Import z CSV</a>
+</div>
+<div class="table-responsive">
+  <table class="table table-sm align-middle">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>SKU</th>
+        <th>Nazwa</th>
+        <th>Cena</th>
+        <th>Ilość</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+        <tr>
+          <td>{{ p.id }}</td>
+          <td>{{ p.sku }}</td>
+          <td>{{ p.name }}</td>
+          <td>{{ '%.2f'|format(p.price) }} NOK</td>
+          <td>{{ p.qty }}</td>
+          <td>
+            <a href="{{ url_for('admin_edit_product', product_id=p.id) }}" class="btn btn-sm btn-outline-secondary">Edytuj</a>
+            <form method="post" action="{{ url_for('admin_delete_product', product_id=p.id) }}" style="display:inline-block" onsubmit="return confirm('Usuń produkt?');">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

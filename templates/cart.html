@@ -1,0 +1,50 @@
+
+{% extends "base.html" %}
+{% block title %}{{ labels.cart }}{% endblock %}
+{% block content %}
+<h1 class="h4 mb-4">{{ labels.cart }}</h1>
+{% if items %}
+  <div class="table-responsive mb-4">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>{{ 'Produkt' if current_lang=='no' else 'Product' }}</th>
+          <th>{{ 'Cena' if current_lang=='no' else 'Price' }}</th>
+          <th>{{ 'Ilość' if current_lang=='no' else 'Qty' }}</th>
+          <th>{{ 'Suma' if current_lang=='no' else 'Subtotal' }}</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ '%.2f'|format(item.product.price) }} NOK</td>
+            <td>{{ item.qty }}</td>
+            <td>{{ '%.2f'|format(item.subtotal) }} NOK</td>
+            <td>
+              <form method="post" action="{{ url_for('remove_from_cart', product_id=item.product.id) }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                  {{ 'Usuń' if current_lang=='no' else 'Remove' }}
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="fs-5">
+      {{ 'Razem:' if current_lang=='no' else 'Total:' }} <strong>{{ '%.2f'|format(total) }} NOK</strong>
+    </div>
+    <a href="{{ url_for('checkout') }}" class="btn btn-dark btn-lg rounded-pill px-4">
+      {{ 'Przejdź do płatności' if current_lang=='no' else 'Proceed to checkout' }}
+    </a>
+  </div>
+{% else %}
+  <p class="text-muted">
+    {{ 'Koszyk jest pusty.' if current_lang=='no' else 'Your cart is empty.' }}
+  </p>
+{% endif %}
+{% endblock %}

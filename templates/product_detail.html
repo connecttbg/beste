@@ -1,0 +1,44 @@
+
+{% extends "base.html" %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    {% if product.image_url %}
+      <img src="{{ product.image_url }}" class="img-fluid rounded-4 shadow-sm mb-3" alt="{{ product.name }}">
+    {% endif %}
+  </div>
+  <div class="col-md-6">
+    <h1 class="h3 mb-2">{{ product.name }}</h1>
+    <div class="text-muted small mb-2">
+      SKU: {{ product.sku }}{% if product.ean %} | EAN: {{ product.ean }}{% endif %}
+    </div>
+    <div class="mb-3">
+      <span class="h4 fw-bold">{{ '%.2f'|format(product.price) }} NOK</span>
+      {% if product.tax %}
+        <span class="text-muted small">
+          {{ '(inkl. mva)' if current_lang=='no' else '(incl. VAT)' }}
+        </span>
+      {% endif %}
+    </div>
+    <p class="mb-4">
+      {% if current_lang == 'no' %}
+        {{ product.description_no }}
+      {% else %}
+        {{ product.description_en or product.description_no }}
+      {% endif %}
+    </p>
+    <form method="post" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="d-flex align-items-center mb-3">
+      <input type="number" min="1" name="qty" value="1" class="form-control w-auto me-2" style="max-width: 100px;">
+      <button type="submit" class="btn btn-dark rounded-pill px-4">
+        {{ 'Dodaj do koszyka' if current_lang=='no' else 'Add to cart' }}
+      </button>
+    </form>
+    {% if product.qty is not none %}
+      <div class="small text-muted">
+        {{ 'Dostępnych sztuk:' if current_lang=='no' else 'In stock:' }} {{ product.qty }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
