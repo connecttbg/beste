@@ -429,9 +429,17 @@ def admin_import():
 
 
 if __name__ == '__main__':
+    app.run()
+
+
+
+
+
+
+@app.before_first_request
+def init_db_and_admin():
     with app.app_context():
         db.create_all()
-        # --- AUTO ADMIN CREATION ---
         admin = User.query.filter_by(email="admin@bestenegler.no").first()
         if not admin:
             u = User(email="admin@bestenegler.no")
@@ -439,12 +447,6 @@ if __name__ == '__main__':
             u.is_admin = True
             db.session.add(u)
             db.session.commit()
-            print("AUTO: Admin account created.")
+            print("AUTO (Render): Admin account created.")
         else:
-            print("AUTO: Admin already exists.")
-        # ---------------------------
-    app.run(debug=True)
-
-
-
-
+            print("AUTO (Render): Admin already exists.")
